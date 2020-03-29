@@ -1,3 +1,3 @@
 # ClassWalker-9k
 
-John is a is the best
+John is the best
