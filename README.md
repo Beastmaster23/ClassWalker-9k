@@ -1,3 +1,2 @@
 # ClassWalker-9k
-
-John is the best
+You need an api key
