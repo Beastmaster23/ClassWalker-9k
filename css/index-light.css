@@ -6,6 +6,9 @@
 #main{
     height: 600px;
 }
+#saveMap{
+    display: none;
+}
 /* Optional: Makes the sample page fill the window. */
 html, body {
     height: 100%;

@@ -34,12 +34,9 @@ function CurrentPositionControl(controlDiv, map) {
     controlUI.addEventListener('click', function () {
         getLocation(function (pos) {
             current_location = pos;
-            infoWindow.setPosition(pos);
-            infoWindow.setContent('Location found.');
-            infoWindow.open(map);
             map.setCenter(pos);
             map.setZoom(20);
-            mypos={ lat: current_location.lat + .00002, lng: current_location.lng }
+            mypos = { lat: current_location.lat, lng: current_location.lng }
             load_map([
                 {
                     pos: mypos, text: "Bedrooms"
@@ -50,13 +47,59 @@ function CurrentPositionControl(controlDiv, map) {
 }
 
 function load_map(map_loc) {
-    markers=[];
+    markers = [];
     for (var i = 0; i < map_loc.length; i++) {
         var marker = new google.maps.Marker({
             position: map_loc[i].pos,
             map: map,
-            title: map_loc[i].text
-          });
+            title: map_loc[i].title
+        });
         markers.push(marker);
     }
+}
+function loadMapFromFile(evt) {
+    var file = evt.target.files[0];
+    var reader = new FileReader();
+    reader.onload=function (e) {
+        var text = e.target.result
+        
+        deleteMarkers();
+        myPlace = JSON.parse(text, "utf-8");
+        console.log(myPlace);
+        addRoomAll(myPlace.markers);
+    }
+    reader.readAsText(file, "utf-8");
+}
+// Sets the map on all markers in the array.
+function setMapOnAll(map) {
+    for (var i = 0; i < markers.length; i++) {
+        markers[i].ctx.setMap(map);
+    }
+}
+function clearMarkers() {
+    setMapOnAll(null);
+}
+// Deletes all markers in the array by removing references to them.
+function deleteMarkers() {
+    clearMarkers();
+    markers = [];
+}
+function convertMarkers() {
+    myPlace.markers = [];
+
+    markers.forEach(m => {
+        m.ctx=''
+        myPlace.markers.push(m);
+    });
+}
+
+function saveMap() {
+    convertMarkers()
+
+    var jsonMap = JSON.stringify(myPlace), name = "mymap.json";
+    var a = document.getElementById("saveMap");
+    var file = new Blob([jsonMap], { type: ".json" });
+    a.href = URL.createObjectURL(file);
+    a.download = name;
+    a.style.display = "block";
 }

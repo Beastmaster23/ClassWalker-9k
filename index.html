@@ -10,13 +10,62 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <script src="scripts/map.js"></script>
+
 </head>
 
 <body>
     <div class="container-fluid">
         <div class="row">
             <div class="col-lg-4">
-                <button type="button" class="btn">Basic</button>
+                <div class="row">
+                    <div class="col-lg-6">
+                        <h2>Load map</h2>
+                        <input type="file" id="map_json" name="avatar" accept=".json">
+                        <button onClick="saveMap()">Save map</button>
+                        <a id="saveMap">Download map</a>
+                    </div>
+                    <div class="col-lg-6">
+                        <h2>Modes:</h2>
+                        <button onClick="changeMode('add')">Add room</button>
+                        <button onClick="changeMode('remove')">Remove room</button>
+                        <button onClick="changeMode('none')">Normal</button>
+                    </div>
+                </div>
+                <div class="row" id="roomOptions">
+                    <div class="col-lg-12">
+                        <h2>Rooms:</h2>
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <h3>Elevator</h3>
+                                <a onclick="changeMode('add', 'elevator')">
+                                    <img src="pics/s-l300.jpg" style="width:100%" class="img-rounded"
+                                        alt="Elevator sign">
+                                </a>
+                            </div>
+                            <div class="col-lg-6">
+                                <h3>Bathroom</h3>
+                                <a onclick="changeMode('add', 'bathroom')">
+                                    <img src="pics/unnamed.jpg" style="width:100%" class="img-rounded" alt="Bathroom">
+                                </a>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <h3>Other</h3>
+                                <a onclick="changeMode('add', 'other')">
+                                    <img src="pics/room.png" style="width:100%" class="img-rounded" alt="Room icon">
+                                </a>
+
+                            </div>
+                            <div class="col-lg-6">
+                                <h3>Class room</h3>
+                                <a onclick="changeMode('add', 'classroom')">
+                                <img src="pics/download (2).png" style="width:100%" class="img-rounded" alt="Bathroom">
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="col-lg-8" id="main">
                 <div id="map"></div>
@@ -26,9 +75,19 @@
 
     <script>
         var map, infoWindow;
-        var chicago = { lat: 41.85, lng: -87.65 };
+        var chicago = { lat: 29.582394, lng: -98.6213647 };
         var current_location;
-        var markers, mypos;
+        var markers = [], mypos;
+        var myPlace = {}, mode = 'none';
+        var cursorModes = { NONE: 'none', ADD: 'add', REMOVE: 'remove' };
+        var roomType = 'other';
+        var rooms = [];
+        function changeMode(str, args) {
+            mode = str;
+            if (mode == cursorModes.ADD) {
+                roomType = args;
+            }
+        }
 
         function getLocation(func) {
             if (navigator.geolocation) {
@@ -48,14 +107,54 @@
         }
 
         function addRoom(pos, title) {
+
+            var img = "pics/icons/room.png"
+
+            if (roomType == 'elevator') {
+                img = 'pics/icons/elevator.jpg'
+            }
+            if (roomType == 'bathroom') {
+                img = 'pics/icons/restroom.jpg'
+            }
+            if (roomType == 'classroom') {
+                img = 'pics/icons/runner.png'
+            }
             var marker = new google.maps.Marker({
                 position: pos,
                 map: map,
-                title: title
+                title: title,
+                icon: img
             });
-            markers.push(marker);
-
+            var i = markers.length
+            marker.addListener("click", function (event) {
+                if (mode == cursorModes.REMOVE)
+                    deleteRoom(marker)
+            })
+            var type=roomType.toString()
+            var m={ position: marker.position, title: marker.title , type: type, ctx:marker}
+            markers.push(m);
         }
+
+        function addRoomAll(arr) {
+            arr.forEach(e => {
+                addRoom(e.position, e.title, e.type)
+            })
+        }
+
+        function deleteRoom(marker) {
+            var index = 0;
+            markers.find(function (v, i, obj) {
+                if (v.lat == marker.lat && v.lng == marker.lng && v.title == marker.title) {
+                    index = i;
+
+                    return true;
+                } return false;
+            })
+            marker.setMap(null)
+            markers.splice(index, 1)
+            rooms.splice(index, 1)
+        }
+
         function handleLocationError(browserHasGeolocation, infoWindow, pos) {
             infoWindow.setPosition(pos);
             infoWindow.setContent(browserHasGeolocation ?
@@ -80,10 +179,22 @@
             map.controls[google.maps.ControlPosition.TOP_CENTER].push(centerControlDiv);
 
             map.addListener("click", function (event) {
+                if (mode == cursorModes.ADD) {
+                    var title = "Other";
+                    if (roomType == "classroom")
+                        title = "Class room"
+                    if (roomType == "bathroom")
+                        title = "Bathroom"
+                    if (roomType == "elevator")
+                        title = "Elevator"
+                    addRoom(event.latLng, title)
 
-                addRoom(event.latLng, "Bedroom")
+                }
+
+
             })
         }
+        document.getElementById('map_json').addEventListener('change', loadMapFromFile, false);
     </script>
 
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD6XBifNcOqIx7iXnTihoDgFtAQ2M5oO54&callback=initMap"
