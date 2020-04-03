@@ -10,58 +10,61 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <script src="scripts/map.js"></script>
-
+    <link rel="icon" href="pics/download (3).png">
 </head>
 
-<body>
+<body >
+    <div class="container-fluid" style="background-color: rgb(199, 238, 127);">
+        <h1>ClassWalker 9K</h1>
+    </div>
     <div class="container-fluid">
         <div class="row">
             <div class="col-lg-4">
                 <div class="row">
                     <div class="col-lg-6">
                         <h2>Load map</h2>
-                        <input type="file" id="map_json" name="avatar" accept=".json">
-                        <button onClick="saveMap()">Save map</button>
+                        <label class="btn btn-primary btn-file">
+                            Choose file
+                            <input type="file" id="map_json" name="avatar" accept=".json" style="display:none">
+                          </label>
+                        
+                        <button onClick="saveMap()" class="btn btn-primary">Save map</button>
                         <a id="saveMap">Download map</a>
                     </div>
                     <div class="col-lg-6">
                         <h2>Modes:</h2>
-                        <button onClick="changeMode('add')">Add room</button>
-                        <button onClick="changeMode('remove')">Remove room</button>
-                        <button onClick="changeMode('none')">Normal</button>
+                        <button onClick="changeMode('add')" class="btn btn-primary">Add room</button>
+                        <button onClick="changeMode('remove')" class="btn btn-primary">Remove room</button>
+                        <button onClick="changeMode('none')" class="btn btn-primary">Normal</button>
                     </div>
                 </div>
                 <div class="row" id="roomOptions">
-                    <div class="col-lg-12">
+                    <div class="col-sm-12">
                         <h2>Rooms:</h2>
                         <div class="row">
-                            <div class="col-lg-6">
-                                <h3>Elevator</h3>
-                                <a onclick="changeMode('add', 'elevator')">
-                                    <img src="pics/s-l300.jpg" style="width:100%" class="img-rounded"
-                                        alt="Elevator sign">
-                                </a>
-                            </div>
-                            <div class="col-lg-6">
-                                <h3>Bathroom</h3>
-                                <a onclick="changeMode('add', 'bathroom')">
-                                    <img src="pics/unnamed.jpg" style="width:100%" class="img-rounded" alt="Bathroom">
-                                </a>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-lg-6">
-                                <h3>Other</h3>
-                                <a onclick="changeMode('add', 'other')">
-                                    <img src="pics/room.png" style="width:100%" class="img-rounded" alt="Room icon">
-                                </a>
-
-                            </div>
-                            <div class="col-lg-6">
-                                <h3>Class room</h3>
-                                <a onclick="changeMode('add', 'classroom')">
-                                <img src="pics/download (2).png" style="width:100%" class="img-rounded" alt="Bathroom">
-                                </a>
+                            <div>
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-primary"
+                                        onclick="changeMode('add', 'elevator')" id="elevator-btn">
+                                        <img src="pics/s-l300.jpg" class="img-rounded" alt="Elevator sign">
+                                        <h3 class="center-img-text">Elevator</h3>
+                                    </button>
+                                    <button type="button" class="btn btn-primary"
+                                        onclick="changeMode('add', 'bathroom')" id="bathroom-btn">
+                                        <img src="pics/wheelchair-307825.svg" class="img-rounded" alt="Bathroom">
+                                        <h3 class="center-img-text">Bathroom</h3>
+                                    </button>
+                                    <button type="button" class="btn btn-primary" onclick="changeMode('add', 'other')"
+                                        id="other-btn">
+                                        <img src="pics/room.png" class="img-rounded" alt="Room icon">
+                                        <h3 class="center-img-text">Other</h3>
+                                    </button>
+                                    <button type="button" class="btn btn-primary"
+                                        onclick="changeMode('add', 'classroom')" id="classroom-btn">
+                                        <img src="pics/download (2).png" class="img-rounded" alt="Bathroom">
+                                        <h3 class="center-img-text">Class room</h3>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -83,10 +86,19 @@
         var roomType = 'other';
         var rooms = [];
         function changeMode(str, args) {
+
             mode = str;
-            if (mode == cursorModes.ADD) {
+            if (str == cursorModes.ADD) {
+
+                document.getElementById("elevator-btn").className = "btn btn-primary " + " disabled"
+                document.getElementById("bathroom-btn").className = "btn btn-primary " + " disabled"
+                document.getElementById("other-btn").className = "btn btn-primary " + " disabled"
+                document.getElementById("classroom-btn").className = "btn btn-primary " + " disabled"
+                document.getElementById(args + "-btn").className = "btn btn-primary " + " active"
                 roomType = args;
             }
+
+
         }
 
         function getLocation(func) {
@@ -114,7 +126,7 @@
                 img = 'pics/icons/elevator.jpg'
             }
             if (roomType == 'bathroom') {
-                img = 'pics/icons/restroom.jpg'
+                img = 'pics/wheelchair-307825.svg'
             }
             if (roomType == 'classroom') {
                 img = 'pics/icons/runner.png'
@@ -130,8 +142,8 @@
                 if (mode == cursorModes.REMOVE)
                     deleteRoom(marker)
             })
-            var type=roomType.toString()
-            var m={ position: marker.position, title: marker.title , type: type, ctx:marker}
+            var type = roomType.toString()
+            var m = { position: marker.position, title: marker.title, type: type, ctx: marker }
             markers.push(m);
         }
 
@@ -196,9 +208,8 @@
         }
         document.getElementById('map_json').addEventListener('change', loadMapFromFile, false);
     </script>
-
-    <script src="https://maps.googleapis.com/maps/api/js?key=API_KEY&callback=initMap"
-        async defer></script>
+    
+    <script src="https://maps.googleapis.com/maps/api/js?key=API-KEY&callback=initMap" async defer></script>
 </body>
 
 </html>

@@ -14,8 +14,33 @@ html, body {
     height: 100%;
     margin: 0;
     padding: 0;
+    background-color: rgb(199, 238, 127);
+    background: rgb(199, 238, 127);
+}
+.btn-room{
+    width: 150px;
+    padding: 0px;
+    border: none;
+}
+.btn-room:active img{
+    opacity: .1;
+}
+.btn-room h3{
+    color: rgb(0, 88, 62);
 }
 
+img{
+    width: 64px;
+    height: 64px;
+}
+
+.center-img-text {
+    position: absolute;
+    top: 30%;
+    left: 50%;
+    transform: translate(-50%, -30%);
+    font-size: 18px;
+}
 .controlUIDivBorder{
     background-color : '#fff';
     border : '2px solid #fff';
